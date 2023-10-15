@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Image, ImageSourcePropType, Text } from "react-native";
-import Logo from '../../assets/images/appLogo.png';
+import Logo from '../../assets/images/appLogo.jpg';
 import { typographyStyles } from "./typography/typography";
 
 

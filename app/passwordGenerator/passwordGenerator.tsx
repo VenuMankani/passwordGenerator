@@ -8,6 +8,7 @@ import PasswordStrengthBar from 'react-password-strength-bar';
 import { Pressable } from 'react-native';
 import Modal from "react-native-modal";
 import Clipboard from '@react-native-clipboard/clipboard';
+import { Snackbar } from 'react-native-paper';
 
 const PasswordGenerator = () => {
 
@@ -18,6 +19,10 @@ const PasswordGenerator = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [passwordList, setPasswordList] = useState<any>([]);
+    const [showSnacbar, setShowSnackBar] = useState<boolean>(false);
+    const [snackBarMessage, setSnackBarMessage] = useState<string>('')
+    const [selectedApp, setSelectedApp] = useState<string>('');
+    const [selectedPassword, setSelectedPassword] = useState<string>('');
 
     async function logPasswords() {
         try {
@@ -46,7 +51,10 @@ const PasswordGenerator = () => {
 
                 // Save the updated passwords array to AsyncStorage
                 await AsyncStorage.setItem("passwords", JSON.stringify(updatedPasswords));
+                setPasswordList(updatedPasswords);
                 logPasswords();
+                setSnackBarMessage("SAVED  ✔");
+                setShowSnackBar(true);
                 console.log("saved", appName, password);
             } catch (error) {
                 console.log(error);
@@ -146,8 +154,8 @@ const PasswordGenerator = () => {
     }
 
     const handleListClick = (item: any) => {
-        setAppName(item.app);
-        setPassword(item.password);
+        setSelectedApp(item.app);
+        setSelectedPassword(item.password);
         setOpenModal(true);
     }
 
@@ -159,12 +167,15 @@ const PasswordGenerator = () => {
 
     const handleCopyButtonClick = () => {
         // Find the password for the selected app
-        const selectedApp = passwordList.find((passwordItem: any) => passwordItem.app === appName);
+        const selectedAppName = passwordList.find((passwordItem: any) => passwordItem.app === selectedApp);
 
-        if (selectedApp) {
+        if (selectedAppName) {
             // Copy the password (use your copy-to-clipboard logic here)
-            Clipboard.setString(selectedApp.password);
-            console.log("Copying password:", selectedApp.password);
+            Clipboard.setString(selectedAppName.password);
+            setShowSnackBar(true);
+            setIsVisible(false);
+            setSnackBarMessage("COPIED ✔")
+            console.log("Copying password:", selectedAppName.password);
         }
 
         // Close the modal
@@ -251,15 +262,26 @@ const PasswordGenerator = () => {
                         backgroundColor: '#F5F5F5'
                     }}
                 >
-                    <Dialog.Title title={appName} />
+                    <Dialog.Title title={selectedApp} />
                     <Text>
-                        {password}
+                        {selectedPassword}
                     </Text>
                     <Dialog.Actions>
                         <Dialog.Button title="COPY" onPress={handleCopyButtonClick} />
                         <Dialog.Button title="CANCEL" onPress={() => setOpenModal(false)} />
                     </Dialog.Actions>
                 </Dialog>
+
+                <Snackbar
+                    visible={showSnacbar}
+                    duration={1000}
+                    onDismiss={() => setShowSnackBar(false)}
+                    style={{
+                        backgroundColor: 'green'
+                    }}
+                >
+                    <Text style={{ color: 'white' }}>{snackBarMessage}</Text>
+                </Snackbar>
             </View>
         </View>
     )
