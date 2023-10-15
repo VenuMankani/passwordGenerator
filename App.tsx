@@ -1,20 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import PasswordGenerator from './app/passwordGenerator/passwordGenerator';
+import AppLogo from './app/common/appLogo';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  const [showLogo, setShowLogo] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLogo(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer independent={true}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false
+        }}>
+        {showLogo ? (
+          <Stack.Screen
+            name="AppLogo"
+            component={AppLogo}
+          />
+        ) : (
+          <Stack.Screen
+            name="PasswordGenerator"
+            component={PasswordGenerator}
+          />
+        )
+        }
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
