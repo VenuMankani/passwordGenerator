@@ -4,15 +4,13 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
     "@react-native-async-storage/async-storage": "^1.19.3",
-    "@react-native-clipboard/clipboard": "^1.12.1",
-    "@react-native-community/clipboard": "^1.5.1",
     "@react-navigation/native": "^6.1.8",
     "@react-navigation/native-stack": "^6.9.14",
     "@rneui/base": "^4.0.0-rc.7",
@@ -28,8 +26,8 @@
     "react-native-snackbar": "^2.6.2",
     "react-native-vector-icons": "^10.0.0",
     "react-native-web": "~0.19.6",
-    "react-password-strength-bar": "^0.4.1",
-    "expo-clipboard": "~4.3.1"
+    "expo-clipboard": "~4.3.1",
+    "expo-splash-screen": "~0.20.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
