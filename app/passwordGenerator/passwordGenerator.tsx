@@ -26,16 +26,11 @@ const PasswordGenerator = () => {
 
     async function logPasswords() {
         try {
-            const passwordsList: any = await AsyncStorage.getItem("passwords");
-            console.log("passwords", JSON.parse(passwordsList));
+            await AsyncStorage.getItem("passwords");
         } catch (error) {
             console.error("Error retrieving passwords:", error);
         }
     }
-
-
-    console.log({ passwordList });
-
 
     const handleSave = async () => {
         if (validateInputs()) {
@@ -55,7 +50,6 @@ const PasswordGenerator = () => {
                 logPasswords();
                 setSnackBarMessage("SAVED  ✔");
                 setShowSnackBar(true);
-                console.log("saved", appName, password);
             } catch (error) {
                 console.log(error);
             }
@@ -141,7 +135,7 @@ const PasswordGenerator = () => {
             setPasswordError('');
         }
 
-        if (password.length < 10) {
+        if (!password.trim() ||password.length < 10) {
             setPasswordError('Password must be at least 10 characters long!');
             isValid = false;
         } else {
@@ -185,7 +179,6 @@ const PasswordGenerator = () => {
             setShowSnackBar(true);
             setIsVisible(false);
             setSnackBarMessage("COPIED ✔")
-            console.log("Copying password:", selectedAppName.password);
         }
 
         // Close the modal
@@ -265,7 +258,7 @@ const PasswordGenerator = () => {
                     backdropOpacity={0}
                 >
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                        <View style={{ backgroundColor: 'white', borderTopLeftRadius: 10, borderTopRightRadius: 10, maxHeight: '50%' }}>
+                        <View style={{ backgroundColor: '#00FF7F', borderTopLeftRadius: 10, borderTopRightRadius: 10, maxHeight: '50%' }}>
                             <FlatList
                                 data={passwordList}
                                 renderItem={renderListItem}
