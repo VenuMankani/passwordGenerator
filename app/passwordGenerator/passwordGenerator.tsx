@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { FlatList, ScrollView, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { styles } from './passwordGenerator-style'
-import { Input, Icon, Text, Slider, Button, BottomSheet } from '@rneui/themed';
-import { CheckBox, Dialog, ListItem, color } from '@rneui/base';
+import { Input, Text, Button, } from '@rneui/themed';
+import { Dialog, } from '@rneui/base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import PasswordStrengthBar from 'react-password-strength-bar';
 import { Pressable } from 'react-native';
 import Modal from "react-native-modal";
-import Clipboard from '@react-native-clipboard/clipboard';
+import * as Clipboard from 'expo-clipboard';
 import { Snackbar } from 'react-native-paper';
+import PasswordStrengthChecker from './passwordStrengthChecker';
 
 const PasswordGenerator = () => {
 
@@ -141,13 +141,21 @@ const PasswordGenerator = () => {
             setPasswordError('');
         }
 
+        if (password.length < 10) {
+            setPasswordError('Password must be at least 10 characters long!');
+            isValid = false;
+        } else {
+            setPasswordError('');
+        }
+
         return isValid;
     };
 
     const showPasswordList = () => {
-        if (passwordList === null) {
+        if (passwordList === null || passwordList.length === 0) {
             setIsVisible(false);
-            console.log("No Passowrds in the List")
+            setShowSnackBar(true);
+            setSnackBarMessage("Password list id Empty!");
         } else {
             setIsVisible(true);
         }
@@ -161,17 +169,19 @@ const PasswordGenerator = () => {
 
     const renderListItem = ({ item }: { item: any }) => (
         <View style={{ display: 'flex', justifyContent: 'flex-start' }}>
-            <Button type='clear' onPress={() => handleListClick(item)}><Text>{item.app}</Text></Button>
+            <Button type='clear' onPress={() => handleListClick(item)}>
+                <Text style={styles.h6Styles}>{item.app}</Text>
+            </Button>
         </View>
     );
 
-    const handleCopyButtonClick = () => {
+    const handleCopyButtonClick = async () => {
         // Find the password for the selected app
-        const selectedAppName = passwordList.find((passwordItem: any) => passwordItem.app === selectedApp);
+        const selectedAppName: any = passwordList.find((passwordItem: any) => passwordItem.app === selectedApp);
 
         if (selectedAppName) {
             // Copy the password (use your copy-to-clipboard logic here)
-            Clipboard.setString(selectedAppName.password);
+            await Clipboard.setStringAsync(selectedAppName.password);
             setShowSnackBar(true);
             setIsVisible(false);
             setSnackBarMessage("COPIED ✔")
@@ -181,6 +191,19 @@ const PasswordGenerator = () => {
         // Close the modal
         setOpenModal(false);
     };
+
+    const handleDelete = async (appPassword: string) => {
+        const updatedPasswordList = passwordList.filter((password: any) => password.app !== appPassword);
+
+        try {
+            await AsyncStorage.setItem("passwords", JSON.stringify(updatedPasswordList));
+            setPasswordList(updatedPasswordList);
+            setOpenModal(false);
+        } catch (error) {
+            console.error("Error deleting passwords:", error);
+        }
+    };
+
 
 
     return (
@@ -216,10 +239,9 @@ const PasswordGenerator = () => {
                             color: 'white'
                         }}
                     />
-                    <PasswordStrengthBar
-                        minLength={8}
-                        scoreWords={['short', 'Are you kidding me?!', 'Meh!', 'good', 'Perfect']}
-                        password={password} />
+                    <View style={styles.passwordStrength}>
+                        <PasswordStrengthChecker password={password} />
+                    </View>
                 </View>
                 <View style={styles.input}>
                     <Pressable style={{ ...styles.h5Container, backgroundColor: '#39FF14' }} onPress={handleSave}>
@@ -236,7 +258,6 @@ const PasswordGenerator = () => {
                 <Modal
                     isVisible={isVisible}
                     onBackdropPress={() => setIsVisible(false)}
-                    // style={styles.modal}
                     animationIn="slideInUp"
                     animationOut="slideOutDown"
                     onSwipeComplete={() => setIsVisible(false)}
@@ -267,7 +288,8 @@ const PasswordGenerator = () => {
                         {selectedPassword}
                     </Text>
                     <Dialog.Actions>
-                        <Dialog.Button title="COPY" onPress={handleCopyButtonClick} />
+                        <Dialog.Button title="COPY" titleStyle={{ color: 'green' }} onPress={handleCopyButtonClick} />
+                        <Dialog.Button title="DELETE" titleStyle={{ color: 'red' }} onPress={() => handleDelete(selectedApp)} />
                         <Dialog.Button title="CANCEL" onPress={() => setOpenModal(false)} />
                     </Dialog.Actions>
                 </Dialog>

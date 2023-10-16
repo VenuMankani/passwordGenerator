@@ -34,13 +34,16 @@ export const styles = StyleSheet.create({
         marginBottom: 50,
         fontSize: 30,
         color: '#39FF14',
-        fontFamily: 'courier',
         fontWeight: "700"
     },
     h5Styles: {
         fontSize: 18,
         color: '#39FF14',
-        fontFamily: 'courier',
+        fontWeight: "700"
+    },
+    h6Styles: {
+        fontSize: 20,
+        color: 'black',
         fontWeight: "700"
     },
     h5Container: {
@@ -52,16 +55,8 @@ export const styles = StyleSheet.create({
         backgroundColor: '#13121A',
         borderRadius: 5
     },
-    contentView: {
-        display: "flex",
-        flexDirection: 'column',
-        padding: 20,
-        maxWidth: 300,
-        width: '100%',
-        // backgroundColor: '#13121A',
-        justifyContent: 'center',
-        alignItems: 'stretch',
-        color: 'white',
-        borderRadius: 7,
+    passwordStrength: {
+        display: 'flex',
+        flexDirection: 'row-reverse'
     },
 });
